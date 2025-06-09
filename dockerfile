@@ -22,4 +22,4 @@ RUN npx prisma generate
 RUN npm run build
 
 # Inicia
-CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
+CMD ["sh", "-c", "npx prisma migrate reset --force && npm run start:prod"]

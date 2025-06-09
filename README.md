@@ -412,4 +412,8 @@ Com isso, temos uma cadeia de relacionamentos funcionando:
 
   - Adicionar limit e offset nas rotas de findAll
 
+  - Adicionar Interceptor para verificar valores em body (otimização)
+
+  - Adicionar Interceptor para logger
+
   - ...
