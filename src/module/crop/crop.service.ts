@@ -30,11 +30,11 @@ export class CropService {
   }
 
   async findAll() {
-    const crop = await this.prisma.crop.findMany()
+    const crops = await this.prisma.crop.findMany()
 
-    if (!crop) throw new HttpException(MESSAGES.CROP.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!crops) throw new HttpException(MESSAGES.CROP.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    return crop;
+    return crops;
   }
 
   async updateOne(id: number, updateCropDto: UpdateCropDto) {

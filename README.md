@@ -1,98 +1,415 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Brain Agriculture
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Este é um projeto backend desenvolvido com NestJS para gerenciamento de produtores rurais e suas propriedades.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## 💻 Tecnologias
 
-## Description
+- [Node.js](https://nodejs.org/)
+- [NestJS](https://nestjs.com/)
+- [PostgreSQL](https://www.postgresql.org/)
+- [Prisma ORM](https://www.prisma.io/)
+- [Docker](https://www.docker.com/)
+- [TypeScript](https://www.typescriptlang.org/)
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## 🚀 Como executar o projeto
 
-## Project setup
+### Pré-requisitos
 
+Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
+- [Node.js](https://nodejs.org/)
+- [Docker](https://www.docker.com/)
+- [Docker Compose](https://docs.docker.com/compose/)
+
+### 🎲 Rodando a aplicação
+
+1. Clone o repositório
 ```bash
-$ npm install
+git clone https://github.com/krDannylo/brainAgriculture.git
 ```
 
-## Compile and run the project
-
+2. Instale as dependências
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm install
 ```
 
-## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+3. Configure as variáveis de ambiente
+- Crie um arquivo `.env.docker` na raiz do projeto com as seguintes variáveis:
+```env
+DB_USER=seu_usuario
+DB_PASSWORD=sua_senha
+DB_NAME=brain_agriculture
+DATABASE_URL="postgresql://seu_usuario:sua_senha@db:5432/brain_agriculture?schema=public"
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
+4. Inicie os containers com Docker Compose
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+docker-compose up -d
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+A aplicação estará disponível em `http://localhost:3001`
 
-## Resources
+### 🔥 Rodando em desenvolvimento
 
-Check out a few resources that may come in handy when working with NestJS:
+Se preferir rodar em ambiente de desenvolvimento:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+1. Configure um arquivo `.env` com as variáveis de ambiente necessárias
+2. Execute os comandos:
 
-## Support
+```bash
+# Rodar as migrações do banco de dados
+npx prisma migrate deploy
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+# Iniciar em modo de desenvolvimento
+npm run start:dev
+```
 
-## Stay in touch
+A aplicação estará disponível de forma padrão em `http://localhost:3000`
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## 📝 Scripts disponíveis
 
-## License
+- `npm run build`: Compila o projeto
+- `npm run start`: Inicia o projeto em modo de produção
+- `npm run start:dev`: Inicia o projeto em modo de desenvolvimento com hot-reload
+- `npm run test`: Executa os testes unitários
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## 📦 Estrutura do Projeto
+
+O projeto contém a seguinte estrutura e diretórios principais:
+
+- `src/`: Código fonte da aplicação
+- `prisma/`: Schemas e migrações do banco de dados
+- `test/`: Arquivos de teste
+- `dist/`: Código compilado (gerado após build)
+
+## 🛠 Documentação da API
+
+A documentação da API está disponível através do Swagger UI em:
+```
+/docs
+```
+
+![alt text](image.png)
+
+### 🤔 Qual a ideia e como as rotas funcionam?
+
+Seu projeto será iniciado com **0 dados no banco de dados**, então vamos começar a popular e demonstrar como o desenvolvimento deste desafio foi pensado.
+
+Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
+
+---
+
+## 1️⃣ Criar um Produtor
+
+**Rota:** `POST /farmers`
+
+**Body de exemplo:**
+
+```json
+{
+  "name": "Farmer Productor",
+  "document": "672.996.930-03"
+}
+```
+
+**Retorno:**
+
+```json
+{
+  "id": 2,
+  "name": "Farmer Productor",
+  "document": "672.996.930-03",
+  "createdAt": "2025-06-09T17:33:10.286Z",
+  "updatedAt": "2025-06-09T17:33:10.286Z"
+}
+```
+
+---
+
+## 2️⃣ Criar uma Propriedade Rural
+
+**Rota:** `POST /farms`
+
+**Body de exemplo:**
+
+```json
+{
+  "name": "Farm Property",
+  "city": "São Paulo",
+  "state": "SP",
+  "totalArea": 4,
+  "arableArea": 3,
+  "vegetationArea": 1
+}
+```
+
+**Retorno:**
+
+```json
+{
+  "id": 1,
+  "name": "Farm Property",
+  "city": "São Paulo",
+  "state": "SP",
+  "totalArea": 4,
+  "arableArea": 3,
+  "vegetationArea": 1,
+  "farmerId": null,
+  "createdAt": "2025-06-09T17:28:06.226Z",
+  "updatedAt": "2025-06-09T17:28:06.226Z"
+}
+```
+
+---
+
+## 3️⃣ Vincular a Propriedade ao Agricultor
+
+**Rota:** `PATCH /farms/1`
+
+**Body de exemplo:**
+
+```json
+{
+  "farmerId": 2
+}
+```
+
+**Retorno:**
+
+```json
+{
+  "id": 1,
+  "name": "Farm Property",
+  "city": "São Paulo",
+  "state": "SP",
+  "totalArea": 4,
+  "arableArea": 3,
+  "vegetationArea": 1,
+  "farmerId": 2,
+  "createdAt": "2025-06-09T17:28:06.226Z",
+  "updatedAt": "2025-06-09T17:38:14.096Z"
+}
+```
+
+---
+
+## 4️⃣ Criar uma Safra
+
+**Rota:** `POST /harvests`
+
+**Body de exemplo:**
+
+```json
+{
+  "year": "2023",
+  "farmId": 1
+}
+```
+
+**Retorno:**
+
+```json
+{
+  "id": 1,
+  "year": "2023",
+  "farmId": 1,
+  "createdAt": "2025-06-09T17:39:27.484Z",
+  "updatedAt": "2025-06-09T17:39:27.484Z"
+}
+```
+
+---
+
+## 5️⃣ Criar uma Cultura
+
+**Rota:** `POST /crops`
+
+**Body de exemplo:**
+
+```json
+{
+  "name": "Soja",
+  "harvestSeasonId": 1
+}
+```
+
+**Retorno:**
+
+```json
+{
+  "id": 1,
+  "name": "Soja",
+  "harvestSeasonId": 1,
+  "createdAt": "2025-06-09T17:29:04.736Z",
+  "updatedAt": "2025-06-09T17:29:04.736Z"
+}
+```
+
+---
+
+## Consultar os Dados do Agricultor com Todas as Relações
+
+**Rota:** `GET /farmers`
+
+**Retorno esperado:**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Farmer Productor",
+    "document": "672.996.930-03",
+    "createdAt": "2025-06-09T05:22:50.981Z",
+    "updatedAt": "2025-06-09T05:23:41.976Z",
+    "Farm": [
+      {
+        "id": 1,
+        "name": "Farm Property",
+        "city": "São Paulo",
+        "state": "SP",
+        "totalArea": "4",
+        "arableArea": "3",
+        "vegetationArea": "1",
+        "farmerId": 1,
+        "createdAt": "2025-06-09T17:28:06.226Z",
+        "updatedAt": "2025-06-09T17:28:24.911Z",
+        "HarvestSeason": [
+          {
+            "id": 1,
+            "year": "2023",
+            "farmId": 1,
+            "createdAt": "2025-06-09T17:28:56.231Z",
+            "updatedAt": "2025-06-09T17:28:56.231Z",
+            "Crop": [
+              {
+                "id": 1,
+                "name": "Soja",
+                "harvestSeasonId": 1,
+                "createdAt": "2025-06-09T17:29:04.736Z",
+                "updatedAt": "2025-06-09T17:29:04.736Z"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]
+```
+### Por fim temos rota de Dashboard e Docs (Swagger)
+
+**Rota:** `GET /dashboard`
+
+**Retorno:**
+
+```json
+{
+  "totalFarms": 1,
+  "totalHectares": "4",
+  "farmsByState": [
+    {
+      "_count": 1,
+      "state": "SP"
+    }
+  ],
+  "cropsByCulture": [
+    {
+      "_count": 1,
+      "name": "Soja"
+    }
+  ],
+  "landUsage": {
+    "arable": "3",
+    "vegetation": "1"
+  }
+}
+```
+
+**Rota:** `GET /docs`
+#### Para consultar o SWAGGER
+---
+## 🤝 Diagrama de Entidade Relacionamento
+
+Abaixo está a modelagem de dados utilizada neste projeto, representando as entidades principais e seus relacionamentos.
+
+### 🧱 Entidades e Atributos
+
+- **FARMER**
+  - `id` (PK): Identificador do agricultor
+  - `name`: Nome do agricultor
+  - `document`: Documento (CPF/CNPJ)
+
+- **FARM**
+  - `id` (PK): Identificador da fazenda
+  - `name`: Nome da fazenda
+  - `city`: Cidade onde está localizada
+  - `state`: Estado
+  - `totalArea`: Área total da fazenda
+  - `arableArea`: Área agricultável
+  - `vegetationArea`: Área de vegetação
+  - `farmerId` (FK): Referência ao agricultor (FARMER)
+
+- **HARVESTSEASON**
+  - `id` (PK): Identificador da safra
+  - `year`: Ano da safra
+  - `farmId` (FK): Referência à fazenda (FARM)
+
+- **CROP**
+  - `id` (PK): Identificador da cultura
+  - `name`: Nome da cultura
+  - `harvestSeasonId` (FK): Referência à safra (HARVESTSEASON)
+
+```mermaid
+erDiagram
+    FARMER ||--o{ FARM : has
+    FARM ||--o{ HARVESTSEASON : has
+    HARVESTSEASON ||--o{ CROP : has
+
+    FARMER {
+        int id PK
+        string name
+        string document
+    }
+    FARM {
+        int id PK
+        string name
+        string city
+        string state
+        float totalArea
+        float arableArea
+        float vegetationArea
+        int farmerId FK
+    }
+    HARVESTSEASON {
+        int id PK
+        string year
+        int farmId FK
+    }
+    CROP {
+        int id PK
+        string name
+        int harvestSeasonId FK
+    }
+```
+
+![alt text](image-1.png)
+
+Com isso, temos uma cadeia de relacionamentos funcionando:
+
+- `Farmer` possui uma ou mais `Farm(s)`
+- Cada `Farm` possui `HarvestSeason(s)`
+- Cada `HarvestSeason` possui `Crop(s)`
+
+
+## 📊 Melhorias
+
+  - Definir e ajustar o campo document do Farmer se será salvo com pontuação.
+
+  - Adicionar camadas de Usuário, A ideia aqui é criar um módulo de usuários que é quem de fato conduzirá o sistema, utilizando JWT, separação de role (admin, basic).
+
+  - Corrigir horário do CreatedAt do banco de dados, está 3 Horas na frente.
+
+  - Adicionar rotas complementares para encurtar a quantidade de operações entre rotas.
+
+  - Adicionar limit e offset nas rotas de findAll
+
+  - ...

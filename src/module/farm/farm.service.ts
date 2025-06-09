@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { CreateFarmDto } from './dto/create-farm.dto';
 import { UpdateFarmDto } from './dto/update-farm.dto';
 import { MESSAGES } from 'src/common/constants/messages';
+import { mapFarmToResponseDto } from './mapper/farm.mapper';
 
 @Injectable()
 export class FarmService {
@@ -21,7 +22,7 @@ export class FarmService {
       }
     })
 
-    return newFarm;
+    return mapFarmToResponseDto(newFarm)
   }
 
   async findOne(id: number) {
@@ -31,15 +32,15 @@ export class FarmService {
 
     if (!farm) throw new HttpException(MESSAGES.FARM.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    return farm;
+    return mapFarmToResponseDto(farm)
   }
 
   async findAll() {
-    const farm = await this.prisma.farm.findMany()
+    const farms = await this.prisma.farm.findMany()
 
-    if (!farm) throw new HttpException(MESSAGES.FARM.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!farms) throw new HttpException(MESSAGES.FARM.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    return farm;
+    return farms.map(mapFarmToResponseDto); // farms.map(farm => mapFarmToResponseDto(farm));
   }
 
   async updateOne(id: number, updateFarmDto: UpdateFarmDto) {
@@ -60,7 +61,7 @@ export class FarmService {
       data: updateFarmDto
     })
 
-    return updatedFarm;
+    return mapFarmToResponseDto(updatedFarm);
   }
 
   async deleteOne(id: number) {

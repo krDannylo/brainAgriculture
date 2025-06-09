@@ -33,9 +33,17 @@ export class FarmerService {
     const farmer = await this.prisma.farmer.findFirst({
       where: { id },
       include: {
-        Farm: true,
-      }
-    })
+        Farm: {
+          include: {
+            HarvestSeason: {
+              include: {
+                Crop: true,
+              },
+            },
+          },
+        },
+      },
+    });
 
     if (!farmer) throw new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND);
 
@@ -43,15 +51,23 @@ export class FarmerService {
   }
 
   async findAll() {
-    const farmer = await this.prisma.farmer.findMany({
+    const farmers = await this.prisma.farmer.findMany({
       include: {
-        Farm: true,
-      }
+        Farm: {
+          include: {
+            HarvestSeason: {
+              include: {
+                Crop: true,
+              },
+            },
+          },
+        },
+      },
     })
 
-    if (!farmer) throw new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!farmers) throw new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    return farmer;
+    return farmers;
   }
 
   async updateOne(id: number, updateFarmerDto: UpdateFarmerDto) {

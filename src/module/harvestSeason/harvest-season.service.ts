@@ -40,11 +40,11 @@ export class HarvestSeasonService {
   }
 
   async findAll() {
-    const season = await this.prisma.harvestSeason.findMany()
+    const seasons = await this.prisma.harvestSeason.findMany()
 
-    if (!season) throw new HttpException(MESSAGES.HARVEST.NOT_FOUND, HttpStatus.NOT_FOUND);
+    if (!seasons) throw new HttpException(MESSAGES.HARVEST.NOT_FOUND, HttpStatus.NOT_FOUND);
 
-    return season;
+    return seasons;
   }
 
   async updateOne(id: number, updateHarvestSeasonDto: UpdateHarvestSeasonDto) {
