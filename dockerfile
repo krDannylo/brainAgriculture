@@ -2,23 +2,24 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Copia arquivos de dependência
-COPY package*.json ./
+# Instala OpenSSL 3.0 e cria links para compatibilidade
+RUN apk add --no-cache openssl3 && \
+  ln -s /usr/lib/libssl.so.3 /usr/lib/libssl.so.1.1 || true && \
+  ln -s /usr/lib/libcrypto.so.3 /usr/lib/libcrypto.so.1.1 || true
 
-# Instala dependências
+# Copia arquivos de dependência e instala
+COPY package*.json ./
 RUN npm install
 
-# Copia os arquivos do projeto
+# Copia o restante do código
 COPY . .
 
-# Copia a env de produção e usa ela no build
+# Usa .env de produção
 COPY .env.docker .env
 
-# GERA O CLIENT DENTRO DO CONTAINER com os binários corretos!
+# Gera o client e compila
 RUN npx prisma generate
-
-# Compila o projeto
 RUN npm run build
 
-# Executa migrações e inicia a aplicação
+# Inicia
 CMD ["sh", "-c", "npx prisma migrate deploy && npm run start:prod"]
