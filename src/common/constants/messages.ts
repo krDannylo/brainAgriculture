@@ -16,7 +16,8 @@ export const MESSAGES = {
     UPDATED: 'Produtor rural atualizado com sucesso.',
     NOT_FOUND: 'Produtor rural não encontrado.',
     INVALID_DOCUMENT: 'CPF ou CNPJ inválido.',
-    CONFLICT_DOCUMENT: 'Documento já está registrado.'
+    CONFLICT_DOCUMENT: 'Documento já está registrado.',
+    CONFLICT_EMAIL: 'Email já está registrado.'
   },
   HARVEST: {
     CREATED: 'Safra criada com sucesso.',

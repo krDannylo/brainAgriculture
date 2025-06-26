@@ -4,6 +4,8 @@ import { UpdateFarmerDto } from "../module/farmer/dto/update-farmer.dto";
 export const mockCreateFarmerDto: CreateFarmerDto = {
   name: 'Test Farmer',
   document: '12345678901',
+  email: 'email@email.com',
+  password: '123123123'
 };
 
 export const mockFarmer = {

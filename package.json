@@ -17,22 +17,32 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:drop": "npx prisma migrate reset --force",
+    "db:rebuild": "rimraf prisma/migrations && npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed"
+  },
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
   },
   "dependencies": {
     "@clockinit/brazilian-class-validator": "^0.1.10",
     "@nestjs/common": "^11.0.0",
     "@nestjs/config": "^4.0.0",
     "@nestjs/core": "^11.0.0",
+    "@nestjs/jwt": "^11.0.0",
     "@nestjs/mapped-types": "^2.0.4",
     "@nestjs/platform-express": "^11.0.0",
     "@nestjs/swagger": "^11.2.0",
+    "@nestjs/throttler": "^6.4.0",
     "@prisma/client": "^5.7.1",
+    "bcryptjs": "^3.0.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "cpf-cnpj-validator": "^1.0.3",
+    "helmet": "^8.1.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
+    "sanitize-html": "^2.17.0",
     "swagger-ui-express": "^5.0.1",
     "typescript-eslint": "^8.33.1",
     "winston": "^3.11.0"

@@ -3,6 +3,7 @@ import { AppModule } from './module/app/app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 ({
   imports: [
@@ -16,13 +17,18 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.use(helmet())
+
   app.enableCors({
     origin: '*',
   })
 
   app.useGlobalPipes(
     new ValidationPipe({
+      transform: true,
       whitelist: true,
+      forbidUnknownValues: true,
+      validationError: { target: false },
     })
   )
 
