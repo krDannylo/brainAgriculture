@@ -10,6 +10,7 @@ export const MESSAGES = {
     DELETED: 'Fazenda deletada com sucesso.',
     NOT_FOUND: 'Fazenda não encontrada.',
     INVALID_AREA: 'A soma das áreas não pode ultrapassar a área total da fazenda.',
+    NOT_FOUND_OR_UNAUTHORIZED: 'Fazenda não encontrada ou não pertence ao usuário autenticado.',
   },
   FARMER: {
     CREATED: 'Produtor rural cadastrado com sucesso.',
@@ -22,9 +23,11 @@ export const MESSAGES = {
   HARVEST: {
     CREATED: 'Safra criada com sucesso.',
     NOT_FOUND: 'Safra não encontrada.',
+    NOT_FOUND_OR_UNAUTHORIZED: 'Safra não encontrada ou não pertence ao usuário autenticado.'
   },
   CROP: {
     CREATED: 'Cultura cadastrada com sucesso.',
     NOT_FOUND: 'Cultura não encontrada.',
+    NOT_FOUND_OR_UNAUTHORIZED: 'Cultura não encontrada ou não pertence ao usuário.'
   },
 };

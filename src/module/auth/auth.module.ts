@@ -8,7 +8,6 @@ import { ConfigModule } from '@nestjs/config';
 import jwtConfig from './config/jwt.config';
 import { JwtModule } from '@nestjs/jwt';
 
-//Módulo Global - Pode ser usado na aplicação inteira ( não preciso importar em outros módulos para usar como é comumente feito) tendo apenas que importar ele no APP Module
 @Global()
 @Module({
   imports: [
@@ -17,11 +16,11 @@ import { JwtModule } from '@nestjs/jwt';
     JwtModule.registerAsync(jwtConfig.asProvider())
   ],
   providers: [{
-    provide: HashingServiceProtocol, //Provedor
-    useClass: BcryptService //Use Class é a classe usada pelo provedor
+    provide: HashingServiceProtocol,
+    useClass: BcryptService
   }, AuthService],
   exports: [
-    HashingServiceProtocol, //Por isso na hora de export eu mantenho apenas o provider
+    HashingServiceProtocol,
     JwtModule,
     ConfigModule
   ],

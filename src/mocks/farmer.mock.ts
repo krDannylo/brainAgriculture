@@ -10,7 +10,9 @@ export const mockCreateFarmerDto: CreateFarmerDto = {
 
 export const mockFarmer = {
   id: 1,
-  ...mockCreateFarmerDto,
+  name: 'Test Farmer',
+  document: '12345678901',
+  email: 'email@email.com',
   createdAt: new Date(),
   updatedAt: new Date(),
   Farm: [],
@@ -21,6 +23,7 @@ export const mockFarmers = [
     id: 1,
     name: 'Test Farmer 1',
     document: '12345678901',
+    email: 'test1@email.com',
     createdAt: new Date(),
     updatedAt: new Date(),
     Farm: [],
@@ -29,6 +32,7 @@ export const mockFarmers = [
     id: 2,
     name: 'Test Farmer 2',
     document: '98765432109',
+    email: 'test2@email.com',
     createdAt: new Date(),
     updatedAt: new Date(),
     Farm: [],
@@ -43,6 +47,7 @@ export const mockUpdatedFarmer = {
   id: 1,
   name: 'Updated Farmer',
   document: '12345678901',
+  email: 'email@email.com',
   createdAt: new Date(),
   updatedAt: new Date(),
   Farm: [],
@@ -63,6 +68,6 @@ export const mockFarmerService = {
   create: jest.fn(),
   findOne: jest.fn(),
   findAll: jest.fn(),
-  updateOne: jest.fn(),
-  deleteOne: jest.fn(),
+  updateById: jest.fn(),
+  deleteById: jest.fn(),
 }; 

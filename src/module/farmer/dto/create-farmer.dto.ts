@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, isNotEmpty, IsString, Matches, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, isNotEmpty, IsOptional, IsString, Matches, MinLength } from "class-validator";
 import { IsValidDocument } from "src/common/validators/document.validator";
 import sanitizeHtml from 'sanitize-html';
 import { Transform } from "class-transformer";

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNumber, isNumber, IsPositive, IsString, MinLength } from "class-validator";
+import { IsNotEmpty, IsNumber, isNumber, IsOptional, IsPositive, IsString, MinLength } from "class-validator";
 
 export class CreateCropDto {
 

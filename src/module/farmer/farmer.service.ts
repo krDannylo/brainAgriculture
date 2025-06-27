@@ -58,6 +58,7 @@ export class FarmerService {
         id: true,
         name: true,
         email: true,
+        role: true,
         Farm: {
           include: {
             HarvestSeason: {
