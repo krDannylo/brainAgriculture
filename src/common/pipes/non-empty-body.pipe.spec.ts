@@ -25,7 +25,6 @@ describe('NonEmptyBodyPipe', () => {
       metatype: Object,
       data: ''
     };
-
     expect(pipe.transform(value, paramMetadata)).toBe(value);
   });
 
