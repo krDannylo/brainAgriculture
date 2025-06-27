@@ -37,7 +37,12 @@ describe('FarmService', () => {
 
     const result = await service.createOne(mockCreateFarmDto);
 
-    expect(result).toEqual(mockFarm);
+    expect(result).toEqual({
+      ...mockFarm,
+      totalArea: 1000,
+      arableArea: 600,
+      vegetationArea: 400,
+    });
     expect(prisma.farm.create).toHaveBeenCalledWith({
       data: {
         name: mockCreateFarmDto.name,
@@ -56,7 +61,12 @@ describe('FarmService', () => {
 
     const result = await service.findOne(1);
 
-    expect(result).toEqual(mockFarm);
+    expect(result).toEqual({
+      ...mockFarm,
+      totalArea: 1000,
+      arableArea: 600,
+      vegetationArea: 400,
+    });
     expect(prisma.farm.findFirst).toHaveBeenCalledWith({
       where: { id: 1 },
     });
@@ -75,7 +85,10 @@ describe('FarmService', () => {
 
     const result = await service.findAll();
 
-    expect(result).toEqual(mockFarms);
+    expect(result).toEqual([
+      { ...mockFarms[0], totalArea: 1000, arableArea: 600, vegetationArea: 400 },
+      { ...mockFarms[1], totalArea: 2000, arableArea: 1200, vegetationArea: 800 },
+    ]);
     expect(prisma.farm.findMany).toHaveBeenCalled();
   });
 
@@ -99,7 +112,12 @@ describe('FarmService', () => {
 
     const result = await service.updateOne(1, updateFarmDto);
 
-    expect(result).toEqual(mockUpdatedFarm);
+    expect(result).toEqual({
+      ...mockUpdatedFarm,
+      totalArea: 1000,
+      arableArea: 600,
+      vegetationArea: 400,
+    });
     expect(prisma.farm.update).toHaveBeenCalledWith({
       where: { id: 1 },
       data: updateFarmDto,
