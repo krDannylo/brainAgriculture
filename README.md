@@ -10,6 +10,11 @@ Este é um projeto backend desenvolvido com NestJS para gerenciamento de produto
 - [Prisma ORM](https://www.prisma.io/)
 - [Docker](https://www.docker.com/)
 - [TypeScript](https://www.typescriptlang.org/)
+- [JWT](https://jwt.io/) - Autenticação
+- [bcryptjs](https://github.com/dcodeIO/bcrypt.js/) - Hash de senhas
+- [Helmet](https://helmetjs.github.io/) - Segurança
+- [Winston](https://github.com/winstonjs/winston) - Logging
+- [Throttler](https://docs.nestjs.com/security/rate-limiting) - Rate Limiting
 
 ## 🚀 Como executar o projeto
 
@@ -33,37 +38,44 @@ npm install
 ```
 
 3. Configure as variáveis de ambiente
-- Crie um arquivo `.env.docker` na raiz do projeto com as seguintes variáveis:
+- Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
 ```env
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=brain_agriculture
-DATABASE_URL="postgresql://seu_usuario:sua_senha@db:5432/brain_agriculture?schema=public"
+DATABASE_URL="postgresql://seu_usuario:sua_senha@localhost:5432/brain_agriculture?schema=public"
+JWT_SECRET=sua_chave_secreta_jwt
+PORT=3000
 ```
 
-4. Inicie os containers com Docker Compose
+4. Configure o banco de dados
+```bash
+# Para desenvolvimento (reset rápido)
+npm run db:drop
+
+# Para produção (com migrações)
+npm run db:rebuild
+```
+
+5. Inicie a aplicação
+```bash
+# Desenvolvimento
+npm run start:dev
+
+# Produção
+npm run start:prod
+```
+
+A aplicação estará disponível em `http://localhost:3000`
+
+### 🔥 Rodando com Docker
+
+Se preferir rodar com Docker:
+
+1. Configure um arquivo `.env.docker` com as variáveis de ambiente
+2. Execute:
 ```bash
 docker-compose up -d
 ```
 
-A aplicação estará disponível em `http://localhost:3001`
-
-### 🔥 Rodando em desenvolvimento
-
-Se preferir rodar em ambiente de desenvolvimento:
-
-1. Configure um arquivo `.env` com as variáveis de ambiente necessárias
-2. Execute os comandos:
-
-```bash
-# Rodar as migrações do banco de dados
-npx prisma migrate deploy
-
-# Iniciar em modo de desenvolvimento
-npm run start:dev
-```
-
-A aplicação estará disponível de forma padrão em `http://localhost:3000`
+A aplicação estará disponível em `http://localhost:80`
 
 ## 📝 Scripts disponíveis
 
@@ -71,15 +83,68 @@ A aplicação estará disponível de forma padrão em `http://localhost:3000`
 - `npm run start`: Inicia o projeto em modo de produção
 - `npm run start:dev`: Inicia o projeto em modo de desenvolvimento com hot-reload
 - `npm run test`: Executa os testes unitários
+- `npm run test:e2e`: Executa os testes end-to-end
+- `npm run test`: Executa os testes unitários e end-to-end
+- `npm run db:drop`: Reseta o banco de dados e executa o seed
+- `npm run db:rebuild`: Remove migrações, cria nova migração e executa o seed
+
+## 🔐 Autenticação
+
+O sistema utiliza JWT para autenticação. Todas as rotas (exceto health checks) requerem autenticação.
+
+### Login
+**Rota:** `POST /auth/signin`
+
+```json
+{
+  "email": "admin@admin.com",
+  "password": "admin"
+}
+```
+
+### Resposta
+```json
+{
+  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "user": {
+    "id": 1,
+    "email": "admin@example.com",
+    "role": "admin"
+  }
+}
+```
+
+## 🛡️ Segurança
+
+- **Rate Limiting**: 60 requisições por minuto, com bloqueio de 30 segundos
+- **Helmet**: Headers de segurança configurados
+- **Sanitização**: Todos os inputs são sanitizados automaticamente
+- **Validação**: Validação robusta com class-validator
+- **CORS**: Configurado para permitir requisições cross-origin
+
+## 🏥 Health Checks
+
+- `GET /health`: Status completo da aplicação
+- `GET /health/ready`: Verificação de readiness (conectividade com banco)
 
 ## 📦 Estrutura do Projeto
 
-O projeto contém a seguinte estrutura e diretórios principais:
-
-- `src/`: Código fonte da aplicação
-- `prisma/`: Schemas e migrações do banco de dados
-- `test/`: Arquivos de teste
-- `dist/`: Código compilado (gerado após build)
+Aqui a ideia foi manter o padrão de arquitetura e boas práticas do NestJS.
+```
+src/
+├── common/           # Utilitários e decorators comuns
+├── module/           # Módulos da aplicação
+│   ├── auth/         # Autenticação JWT
+│   ├── farmer/       # Gerenciamento de produtores
+│   ├── farm/         # Gerenciamento de propriedades
+│   ├── harvestSeason/# Gerenciamento de safras
+│   ├── crop/         # Gerenciamento de culturas
+│   ├── dashboard/    # Dashboard com estatísticas
+│   ├── health/       # Health checks
+│   └── prisma/       # Configuração do Prisma
+├── mocks/            # Dados mock para testes
+└── main.ts           # Arquivo principal
+```
 
 ## 🛠 Documentação da API
 
@@ -88,13 +153,30 @@ A documentação da API está disponível através do Swagger UI em:
 /docs
 ```
 
-![alt text](image.png)
-
 ### 🤔 Qual a ideia e como as rotas funcionam?
 
-Seu projeto será iniciado com **0 dados no banco de dados**, então vamos começar a popular e demonstrar como o desenvolvimento deste desafio foi pensado.
+O projeto será iniciado com **dados de exemplo no banco de dados** (via seed), incluindo um usuário admin para autenticação.
 
-Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
+**Credenciais padrão:**
+- Email: `admin@admin.com`
+- Senha: `admin`
+
+---
+
+## 🔐 Autenticação
+
+Primeiro, faça login para obter o token JWT:
+
+**Rota:** `POST /auth/signin`
+
+```json
+{
+  "email": "admin@admin.com",
+  "password": "admin"
+}
+```
+
+Use o token retornado no header `Authorization: Bearer <token>` para todas as outras requisições.
 
 ---
 
@@ -102,12 +184,16 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
 
 **Rota:** `POST /farmers`
 
+**Headers:** `Authorization: Bearer <token>`
+
 **Body de exemplo:**
 
 ```json
 {
   "name": "Farmer Productor",
-  "document": "672.996.930-03"
+  "document": "672.996.930-03",
+  "email": "farmer@example.com",
+  "password": "senha123"
 }
 ```
 
@@ -118,6 +204,7 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
   "id": 2,
   "name": "Farmer Productor",
   "document": "672.996.930-03",
+  "email": "farmer@example.com",
   "createdAt": "2025-06-09T17:33:10.286Z",
   "updatedAt": "2025-06-09T17:33:10.286Z"
 }
@@ -129,46 +216,18 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
 
 **Rota:** `POST /farms`
 
+**Headers:** `Authorization: Bearer <token>`
+
 **Body de exemplo:**
 
 ```json
 {
-  "name": "Farm Property",
-  "city": "São Paulo",
-  "state": "SP",
-  "totalArea": 4,
-  "arableArea": 3,
-  "vegetationArea": 1
-}
-```
-
-**Retorno:**
-
-```json
-{
-  "id": 1,
   "name": "Farm Property",
   "city": "São Paulo",
   "state": "SP",
   "totalArea": 4,
   "arableArea": 3,
   "vegetationArea": 1,
-  "farmerId": null,
-  "createdAt": "2025-06-09T17:28:06.226Z",
-  "updatedAt": "2025-06-09T17:28:06.226Z"
-}
-```
-
----
-
-## 3️⃣ Vincular a Propriedade ao Agricultor
-
-**Rota:** `PATCH /farms/1`
-
-**Body de exemplo:**
-
-```json
-{
   "farmerId": 2
 }
 ```
@@ -186,15 +245,17 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
   "vegetationArea": 1,
   "farmerId": 2,
   "createdAt": "2025-06-09T17:28:06.226Z",
-  "updatedAt": "2025-06-09T17:38:14.096Z"
+  "updatedAt": "2025-06-09T17:28:06.226Z"
 }
 ```
 
 ---
 
-## 4️⃣ Criar uma Safra
+## 3️⃣ Criar uma Safra
 
 **Rota:** `POST /harvests`
+
+**Headers:** `Authorization: Bearer <token>`
 
 **Body de exemplo:**
 
@@ -219,9 +280,11 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
 
 ---
 
-## 5️⃣ Criar uma Cultura
+## 4️⃣ Criar uma Cultura
 
 **Rota:** `POST /crops`
+
+**Headers:** `Authorization: Bearer <token>`
 
 **Body de exemplo:**
 
@@ -246,65 +309,119 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
 
 ---
 
+## 📄 Paginação
+
+Todas as rotas GET de listagem suportam paginação:
+
+**Rota:** `GET /farmers?page=1&limit=10`
+
+**Parâmetros:**
+- `page`: Número da página (padrão: 1)
+- `limit`: Itens por página (padrão: 10, máximo: 100)
+
+**Retorno:**
+
+```json
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Farmer Productor",
+      "document": "672.996.930-03",
+      "email": "farmer@example.com",
+      "createdAt": "2025-06-09T05:22:50.981Z",
+      "updatedAt": "2025-06-09T05:23:41.976Z",
+      "farms": [...]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "totalPages": 3,
+    "hasNext": true,
+    "hasPrev": false
+  }
+}
+```
+
+---
+
 ## Consultar os Dados do Agricultor com Todas as Relações
 
 **Rota:** `GET /farmers`
 
+**Headers:** `Authorization: Bearer <token>`
+
 **Retorno esperado:**
 
 ```json
-[
-  {
-    "id": 1,
-    "name": "Farmer Productor",
-    "document": "672.996.930-03",
-    "createdAt": "2025-06-09T05:22:50.981Z",
-    "updatedAt": "2025-06-09T05:23:41.976Z",
-    "Farm": [
-      {
-        "id": 1,
-        "name": "Farm Property",
-        "city": "São Paulo",
-        "state": "SP",
-        "totalArea": "4",
-        "arableArea": "3",
-        "vegetationArea": "1",
-        "farmerId": 1,
-        "createdAt": "2025-06-09T17:28:06.226Z",
-        "updatedAt": "2025-06-09T17:28:24.911Z",
-        "HarvestSeason": [
-          {
-            "id": 1,
-            "year": "2023",
-            "farmId": 1,
-            "createdAt": "2025-06-09T17:28:56.231Z",
-            "updatedAt": "2025-06-09T17:28:56.231Z",
-            "Crop": [
-              {
-                "id": 1,
-                "name": "Soja",
-                "harvestSeasonId": 1,
-                "createdAt": "2025-06-09T17:29:04.736Z",
-                "updatedAt": "2025-06-09T17:29:04.736Z"
-              }
-            ]
-          }
-        ]
-      }
-    ]
+{
+  "data": [
+    {
+      "id": 1,
+      "name": "Farmer Productor",
+      "document": "672.996.930-03",
+      "email": "farmer@example.com",
+      "createdAt": "2025-06-09T05:22:50.981Z",
+      "updatedAt": "2025-06-09T05:23:41.976Z",
+      "farms": [
+        {
+          "id": 1,
+          "name": "Farm Property",
+          "city": "São Paulo",
+          "state": "SP",
+          "totalArea": 4,
+          "arableArea": 3,
+          "vegetationArea": 1,
+          "farmerId": 1,
+          "createdAt": "2025-06-09T17:28:06.226Z",
+          "updatedAt": "2025-06-09T17:28:24.911Z",
+          "harvestSeasons": [
+            {
+              "id": 1,
+              "year": "2023",
+              "farmId": 1,
+              "createdAt": "2025-06-09T17:28:56.231Z",
+              "updatedAt": "2025-06-09T17:28:56.231Z",
+              "crops": [
+                {
+                  "id": 1,
+                  "name": "Soja",
+                  "harvestSeasonId": 1,
+                  "createdAt": "2025-06-09T17:29:04.736Z",
+                  "updatedAt": "2025-06-09T17:29:04.736Z"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "totalPages": 1,
+    "hasNext": false,
+    "hasPrev": false
   }
-]
+}
 ```
+
 ### Por fim temos rota de Dashboard e Docs (Swagger)
 
 **Rota:** `GET /dashboard`
+
+**Headers:** `Authorization: Bearer <token>`
 
 **Retorno:**
 
 ```json
 {
   "totalFarms": 1,
-  "totalHectares": "4",
+  "totalHectares": 4,
   "farmsByState": [
     {
       "_count": 1,
@@ -318,25 +435,52 @@ Lembrando que os dados abaixo são fictícios, podendo ter leves alterações:
     }
   ],
   "landUsage": {
-    "arable": "3",
-    "vegetation": "1"
+    "arable": 3,
+    "vegetation": 1
   }
 }
 ```
 
 **Rota:** `GET /docs`
 #### Para consultar o SWAGGER
+
 ---
+
+## 🧪 Testes
+
+O projeto inclui testes unitários e end-to-end:
+
+```bash
+# Testes unitários
+npm run test
+
+# Testes e2e
+npm run test:e2e
+
+# Cobertura de testes
+npm run test:cov
+```
+
+---
+
 ## 🤝 Diagrama de Entidade Relacionamento
 
 Abaixo está a modelagem de dados utilizada neste projeto, representando as entidades principais e seus relacionamentos.
 
 ### 🧱 Entidades e Atributos
 
+- **USER**
+  - `id` (PK): Identificador do usuário
+  - `email`: Email do usuário
+  - `password`: Senha criptografada
+  - `role`: Role do usuário (admin, farmer)
+
 - **FARMER**
   - `id` (PK): Identificador do agricultor
   - `name`: Nome do agricultor
   - `document`: Documento (CPF/CNPJ)
+  - `email`: Email do agricultor
+  - `password`: Senha criptografada
 
 - **FARM**
   - `id` (PK): Identificador da fazenda
@@ -360,14 +504,23 @@ Abaixo está a modelagem de dados utilizada neste projeto, representando as enti
 
 ```mermaid
 erDiagram
+    USER ||--o{ FARMER : manages
     FARMER ||--o{ FARM : has
     FARM ||--o{ HARVESTSEASON : has
     HARVESTSEASON ||--o{ CROP : has
 
+    USER {
+        int id PK
+        string email
+        string password
+        string role
+    }
     FARMER {
         int id PK
         string name
         string document
+        string email
+        string password
     }
     FARM {
         int id PK
@@ -395,25 +548,33 @@ erDiagram
 
 Com isso, temos uma cadeia de relacionamentos funcionando:
 
+- `User` gerencia `Farmer(s)`
 - `Farmer` possui uma ou mais `Farm(s)`
 - Cada `Farm` possui `HarvestSeason(s)`
 - Cada `HarvestSeason` possui `Crop(s)`
 
+## 📊 Funcionalidades Implementadas
 
-## 📊 Melhorias
+✅ **Autenticação JWT** - Sistema completo de login com roles
 
-  - Definir e ajustar o campo document do Farmer se será salvo com pontuação.
+✅ **Health Checks** - Monitoramento de saúde da aplicação
 
-  - Adicionar camadas de Usuário, A ideia aqui é criar um módulo de usuários que é quem de fato conduzirá o sistema, utilizando JWT, separação de role (admin, basic).
+✅ **Paginação** - Todas as rotas de listagem com paginação
 
-  - Corrigir horário do CreatedAt do banco de dados, está 3 Horas na frente.
+✅ **Sanitização** - Proteção contra XSS em todos os inputs
 
-  - Adicionar rotas complementares para encurtar a quantidade de operações entre rotas.
+✅ **Rate Limiting** - Proteção contra ataques de força bruta
 
-  - Adicionar limit e offset nas rotas de findAll
+✅ **Validação** - Validação robusta com class-validator
 
-  - Adicionar Interceptor para verificar valores em body (otimização)
+✅ **Logging** - Sistema de logs com Winston
 
-  - Adicionar Interceptor para logger
+✅ **Testes** - Testes unitários e e2e completos
 
-  - ...
+✅ **Documentação** - Swagger UI integrado
+
+✅ **Segurança** - Helmet, CORS, validação de CPF/CNPJ
+
+✅ **Seed** - Dados de exemplo para desenvolvimento
+
+## 🔮 Próximas Melhorias
