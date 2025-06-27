@@ -3,6 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { CreateHarvestSeasonDto } from "./dto/create-harvest-season.dto";
 import { UpdateHarvestSeasonDto } from "./dto/update-harvest-season.dto";
 import { MESSAGES } from "src/common/constants/messages";
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class HarvestSeasonService {
@@ -104,6 +105,44 @@ export class HarvestSeasonService {
     return seasons;
   }
 
+  async findAllPaginated(paginationQuery: PaginationQueryDto): Promise<PaginationResponseDto<any>> {
+    const { page = 1, limit = 10 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [seasons, total] = await Promise.all([
+      this.prisma.harvestSeason.findMany({
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+        include: {
+          farm: {
+            include: {
+              Farmer: true,
+            },
+          },
+          Crop: true,
+        },
+      }),
+      this.prisma.harvestSeason.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data: seasons,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+      },
+    };
+  }
+
   async findAllByFarmer(farmerId: number) {
     const harvestSeasons = await this.prisma.harvestSeason.findMany({
       where: {
@@ -114,6 +153,58 @@ export class HarvestSeasonService {
     });
 
     return harvestSeasons;
+  }
+
+  async findAllByFarmerPaginated(
+    farmerId: number,
+    paginationQuery: PaginationQueryDto
+  ): Promise<PaginationResponseDto<any>> {
+    const { page = 1, limit = 10 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [seasons, total] = await Promise.all([
+      this.prisma.harvestSeason.findMany({
+        where: {
+          farm: {
+            farmerId: farmerId,
+          },
+        },
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+        include: {
+          farm: {
+            include: {
+              Farmer: true,
+            },
+          },
+          Crop: true,
+        },
+      }),
+      this.prisma.harvestSeason.count({
+        where: {
+          farm: {
+            farmerId: farmerId,
+          },
+        },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data: seasons,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+      },
+    };
   }
 
   async updateOne(id: number, updateHarvestSeasonDto: UpdateHarvestSeasonDto) {

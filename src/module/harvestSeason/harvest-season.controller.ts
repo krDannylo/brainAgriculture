@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { CreateHarvestSeasonDto } from "./dto/create-harvest-season.dto";
 import { HarvestSeasonService } from "./harvest-season.service";
 import { NonEmptyBodyPipe } from "src/common/pipes/non-empy-body.pipe";
@@ -9,6 +9,7 @@ import { AuthTokenGuard } from "../auth/guard/auth-token.guard";
 import { TokenPayloadParam } from "../auth/param/token-payload.params";
 import { PayloadTokenDto } from "../auth/dto/payload-token.dto";
 import { ApplyUserIdInterceptor } from "src/common/interceptors/apply-id.interceptor";
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @UseGuards(AuthTokenGuard)
 @Controller('/harvests')
@@ -41,14 +42,15 @@ export class HarvestSeasonController {
   @Get()
   @UseInterceptors(ApplyUserIdInterceptor)
   findHarvests(
-    @TokenPayloadParam() payload: PayloadTokenDto
-  ): Promise<ResponseHarvestSeasonDto[]> {
+    @TokenPayloadParam() payload: PayloadTokenDto,
+    @Query() paginationQuery: PaginationQueryDto
+  ): Promise<PaginationResponseDto<ResponseHarvestSeasonDto>> {
     if (payload.role === 'admin') {
-      return this.harvestSeasonService.findAll();
+      return this.harvestSeasonService.findAllPaginated(paginationQuery);
     }
 
     const farmerId = typeof payload.sub === 'string' ? parseInt(payload.sub, 10) : payload.sub;
-    return this.harvestSeasonService.findAllByFarmer(farmerId);
+    return this.harvestSeasonService.findAllByFarmerPaginated(farmerId, paginationQuery);
   }
 
   @Patch(':id')

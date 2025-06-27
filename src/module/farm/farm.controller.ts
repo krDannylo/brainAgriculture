@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateFarmDto } from './dto/create-farm.dto';
 import { FarmService } from './farm.service';
 import { NonEmptyBodyPipe } from 'src/common/pipes/non-empy-body.pipe';
@@ -9,6 +9,7 @@ import { ApplyUserIdInterceptor } from 'src/common/interceptors/apply-id.interce
 import { AuthTokenGuard } from '../auth/guard/auth-token.guard';
 import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
 import { TokenPayloadParam } from '../auth/param/token-payload.params';
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @UseGuards(AuthTokenGuard)
 @Controller('/farms')
@@ -38,14 +39,15 @@ export class FarmController {
   @Get()
   @UseInterceptors(ApplyUserIdInterceptor)
   findFarms(
-    @TokenPayloadParam() payload: PayloadTokenDto
-  ): Promise<ResponseFarmDto[]> {
+    @TokenPayloadParam() payload: PayloadTokenDto,
+    @Query() paginationQuery: PaginationQueryDto
+  ): Promise<PaginationResponseDto<ResponseFarmDto>> {
     if (payload.role === 'admin') {
-      return this.farmService.findAll();
+      return this.farmService.findAllPaginated(paginationQuery);
     }
 
     const farmerId = typeof payload.sub === 'string' ? parseInt(payload.sub, 10) : payload.sub;
-    return this.farmService.findAllByFarmer(farmerId);
+    return this.farmService.findAllByFarmerPaginated(farmerId, paginationQuery);
   }
 
   @Patch(':id')

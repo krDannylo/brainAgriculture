@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UseInterceptors } from "@nestjs/common";
 import { CropService } from "./crop.service";
 import { CreateCropDto } from "./dto/create-crop.dto";
 import { NonEmptyBodyPipe } from "src/common/pipes/non-empy-body.pipe";
@@ -11,6 +11,7 @@ import { Roles } from "src/common/decorators/roles.decorator";
 import { ApplyUserIdInterceptor } from "src/common/interceptors/apply-id.interceptor";
 import { TokenPayloadParam } from "../auth/param/token-payload.params";
 import { PayloadTokenDto } from "../auth/dto/payload-token.dto";
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @UseGuards(AuthTokenGuard)
 @Controller('/crops')
@@ -46,14 +47,15 @@ export class CropCrontroller {
   @Get()
   @UseInterceptors(ApplyUserIdInterceptor)
   findCrops(
-    @TokenPayloadParam() payload: PayloadTokenDto
-  ): Promise<ResponseCropDto[]> {
+    @TokenPayloadParam() payload: PayloadTokenDto,
+    @Query() paginationQuery: PaginationQueryDto
+  ): Promise<PaginationResponseDto<ResponseCropDto>> {
     if (payload.role === 'admin') {
-      return this.cropService.findAll();
+      return this.cropService.findAllPaginated(paginationQuery);
     }
 
     const farmerId = typeof payload.sub === 'string' ? parseInt(payload.sub, 10) : payload.sub;
-    return this.cropService.findAllByFarmer(farmerId);
+    return this.cropService.findAllByFarmerPaginated(farmerId, paginationQuery);
   }
 
   @Patch(':id')

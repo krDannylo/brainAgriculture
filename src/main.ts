@@ -4,6 +4,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { SanitizePipe } from './common/pipes/sanitize.pipes';
 
 ({
   imports: [
@@ -29,7 +30,8 @@ async function bootstrap() {
       whitelist: true,
       forbidUnknownValues: true,
       validationError: { target: false },
-    })
+    }),
+    new SanitizePipe()
   )
 
   const configSwagger = new DocumentBuilder()

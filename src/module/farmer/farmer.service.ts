@@ -5,6 +5,7 @@ import { UpdateFarmerDto } from './dto/update-farmer.dto';
 import { MESSAGES } from 'src/common/constants/messages';
 import logger from 'src/common/utils/logger.utils';
 import { HashingServiceProtocol } from '../auth/hash/hashing.service';
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 const LOG_CONST = "[FarmerService]"
 
@@ -100,8 +101,53 @@ export class FarmerService {
     return farmers;
   }
 
+  async findAllPaginated(paginationQuery: PaginationQueryDto): Promise<PaginationResponseDto<any>> {
+    const { page = 1, limit = 10 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [farmers, total] = await Promise.all([
+      this.prisma.farmer.findMany({
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          Farm: {
+            include: {
+              HarvestSeason: {
+                include: {
+                  Crop: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      this.prisma.farmer.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data: farmers,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+      },
+    };
+  }
+
   async updateById(id: number, updateFarmerDto: UpdateFarmerDto) {
-    console.log(updateFarmerDto)
+    // console.log(updateFarmerDto)
     const existingFarmer = await this.findOne(id)
 
     if (!existingFarmer) throw new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND)

@@ -8,6 +8,7 @@ import { HarvestSeasonModule } from '../harvestSeason/harvest-season.module';
 import { CropModule } from '../crop/crop.module';
 import { DashboardModule } from '../dashboard/dashboard.module';
 import { AuthModule } from '../auth/auth.module';
+import { HealthModule } from '../health/health.module';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 
@@ -20,6 +21,7 @@ import { APP_GUARD } from '@nestjs/core';
     CropModule,
     DashboardModule,
     AuthModule,
+    HealthModule,
     ThrottlerModule.forRoot({
       throttlers: [{
         ttl: 60000,

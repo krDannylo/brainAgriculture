@@ -5,6 +5,7 @@ import { UpdateFarmDto } from './dto/update-farm.dto';
 import { MESSAGES } from 'src/common/constants/messages';
 import { mapFarmToResponseDto } from './mapper/farm.mapper';
 import { ResponseFarmDto } from './dto/response-farm.dto';
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @Injectable()
 export class FarmService {
@@ -57,6 +58,36 @@ export class FarmService {
     return farms.map(mapFarmToResponseDto); // farms.map(farm => mapFarmToResponseDto(farm));
   }
 
+  async findAllPaginated(paginationQuery: PaginationQueryDto): Promise<PaginationResponseDto<ResponseFarmDto>> {
+    const { page = 1, limit = 10 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [farms, total] = await Promise.all([
+      this.prisma.farm.findMany({
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.farm.count(),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data: farms.map(mapFarmToResponseDto),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+      },
+    };
+  }
+
   async findAllByFarmer(farmerId: number): Promise<ResponseFarmDto[]> {
     const farms = await this.prisma.farm.findMany({
       where: { farmerId },
@@ -66,6 +97,43 @@ export class FarmService {
     if (!farms) throw new HttpException(MESSAGES.FARM.NOT_FOUND, HttpStatus.NOT_FOUND);
 
     return farms.map(mapFarmToResponseDto);
+  }
+
+  async findAllByFarmerPaginated(
+    farmerId: number,
+    paginationQuery: PaginationQueryDto
+  ): Promise<PaginationResponseDto<ResponseFarmDto>> {
+    const { page = 1, limit = 10 } = paginationQuery;
+    const skip = (page - 1) * limit;
+
+    const [farms, total] = await Promise.all([
+      this.prisma.farm.findMany({
+        where: { farmerId },
+        include: { Farmer: true, HarvestSeason: true },
+        skip,
+        take: limit,
+        orderBy: { id: 'asc' },
+      }),
+      this.prisma.farm.count({
+        where: { farmerId },
+      }),
+    ]);
+
+    const totalPages = Math.ceil(total / limit);
+    const hasNext = page < totalPages;
+    const hasPrev = page > 1;
+
+    return {
+      data: farms.map(mapFarmToResponseDto),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages,
+        hasNext,
+        hasPrev,
+      },
+    };
   }
 
   async updateOne(id: number, updateFarmDto: UpdateFarmDto) {

@@ -18,6 +18,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "dotenv -e .env -- jest --config ./test/jest-e2e.json",
+    "tests": "npm run test && npm run test:e2e",
     "db:drop": "npx prisma migrate reset --force",
     "db:rebuild": "rimraf prisma/migrations && npx prisma migrate dev --name init && npx prisma generate && npx prisma db seed"
   },

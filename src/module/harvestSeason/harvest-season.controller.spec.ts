@@ -6,14 +6,15 @@ import { UpdateHarvestSeasonDto } from './dto/update-harvest-season.dto';
 import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
 import { AuthTokenGuard } from '../auth/guard/auth-token.guard';
 import { ApplyUserIdInterceptor } from 'src/common/interceptors/apply-id.interceptor';
+import { PaginationQueryDto } from 'src/common/dto/pagination.dto';
 
 const mockHarvestSeasonService = {
   createOne: jest.fn(),
   createOneByFarmer: jest.fn(),
   findOne: jest.fn(),
   findOneByFarmer: jest.fn(),
-  findAll: jest.fn(),
-  findAllByFarmer: jest.fn(),
+  findAllPaginated: jest.fn(),
+  findAllByFarmerPaginated: jest.fn(),
   updateOne: jest.fn(),
   updateOneByFarmer: jest.fn(),
   deleteOne: jest.fn(),
@@ -75,15 +76,17 @@ describe('HarvestSeasonController', () => {
   });
 
   describe('findHarvests', () => {
-    it('should call findAll for admin', async () => {
+    it('should call findAllPaginated for admin', async () => {
       const payload = { role: 'admin' } as PayloadTokenDto;
-      await controller.findHarvests(payload);
-      expect(service.findAll).toHaveBeenCalled();
+      const paginationQuery = { page: 1, limit: 10 } as PaginationQueryDto;
+      await controller.findHarvests(payload, paginationQuery);
+      expect(service.findAllPaginated).toHaveBeenCalledWith(paginationQuery);
     });
-    it('should call findAllByFarmer for farmer', async () => {
+    it('should call findAllByFarmerPaginated for farmer', async () => {
       const payload = { role: 'farmer', sub: 3 } as PayloadTokenDto;
-      await controller.findHarvests(payload);
-      expect(service.findAllByFarmer).toHaveBeenCalledWith(3);
+      const paginationQuery = { page: 1, limit: 10 } as PaginationQueryDto;
+      await controller.findHarvests(payload, paginationQuery);
+      expect(service.findAllByFarmerPaginated).toHaveBeenCalledWith(3, paginationQuery);
     });
   });
 

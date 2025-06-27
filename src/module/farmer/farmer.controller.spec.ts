@@ -5,11 +5,12 @@ import { CreateFarmerDto } from './dto/create-farmer.dto';
 import { UpdateFarmerDto } from './dto/update-farmer.dto';
 import { AuthTokenGuard } from '../auth/guard/auth-token.guard';
 import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination.dto';
 
 const mockFarmerService = {
   create: jest.fn(),
   findOne: jest.fn(),
-  findAll: jest.fn(),
+  findAllPaginated: jest.fn(),
   updateById: jest.fn(),
   deleteById: jest.fn(),
 };
@@ -54,9 +55,10 @@ describe('FarmerController', () => {
   });
 
   describe('findFarmers', () => {
-    it('should call findAll', async () => {
-      await controller.findFarmers();
-      expect(service.findAll).toHaveBeenCalled();
+    it('should call findAllPaginated', async () => {
+      const paginationQuery = { page: 1, limit: 10 } as PaginationQueryDto;
+      await controller.findFarmers(paginationQuery);
+      expect(service.findAllPaginated).toHaveBeenCalledWith(paginationQuery);
     });
   });
 

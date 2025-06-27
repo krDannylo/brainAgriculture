@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { CreateFarmerDto } from './dto/create-farmer.dto';
 import { FarmerService } from './farmer.service';
 import { NonEmptyBodyPipe } from 'src/common/pipes/non-empy-body.pipe';
@@ -10,6 +10,7 @@ import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
 import { TokenPayloadParam } from '../auth/param/token-payload.params';
 import { RolesGuard } from 'src/common/guards/role.guard';
 import { Roles } from 'src/common/decorators/roles.decorator';
+import { PaginationQueryDto, PaginationResponseDto } from 'src/common/dto/pagination.dto';
 
 @UseGuards(AuthTokenGuard)
 @Controller('/farmers')
@@ -41,8 +42,8 @@ export class FarmerController {
   @UseGuards(RolesGuard)
   @Roles('admin')
   @Get()
-  findFarmers(): Promise<ResponseFarmerDto[]> {
-    return this.farmerService.findAll();
+  findFarmers(@Query() paginationQuery: PaginationQueryDto): Promise<PaginationResponseDto<ResponseFarmerDto>> {
+    return this.farmerService.findAllPaginated(paginationQuery);
   }
 
   @Patch('me')

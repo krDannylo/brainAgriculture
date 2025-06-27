@@ -6,14 +6,15 @@ import { UpdateFarmDto } from './dto/update-farm.dto';
 import { AuthTokenGuard } from '../auth/guard/auth-token.guard';
 import { ApplyUserIdInterceptor } from 'src/common/interceptors/apply-id.interceptor';
 import { PayloadTokenDto } from '../auth/dto/payload-token.dto';
+import { PaginationQueryDto } from 'src/common/dto/pagination.dto';
 
 const mockFarmService = {
   createOne: jest.fn(),
   findOne: jest.fn(),
-  findAll: jest.fn(),
+  findAllPaginated: jest.fn(),
   updateOne: jest.fn(),
   deleteOne: jest.fn(),
-  findAllByFarmer: jest.fn(),
+  findAllByFarmerPaginated: jest.fn(),
   findOneByFarmer: jest.fn(),
   updateOneByFarmer: jest.fn(),
   deleteOneByFarmer: jest.fn(),
@@ -67,15 +68,17 @@ describe('FarmController', () => {
   });
 
   describe('findFarms', () => {
-    it('should call findAll for admin', async () => {
+    it('should call findAllPaginated for admin', async () => {
       const payload = { role: 'admin' } as PayloadTokenDto;
-      await controller.findFarms(payload);
-      expect(service.findAll).toHaveBeenCalled();
+      const paginationQuery = { page: 1, limit: 10 } as PaginationQueryDto;
+      await controller.findFarms(payload, paginationQuery);
+      expect(service.findAllPaginated).toHaveBeenCalledWith(paginationQuery);
     });
-    it('should call findAllByFarmer for farmer', async () => {
+    it('should call findAllByFarmerPaginated for farmer', async () => {
       const payload = { role: 'farmer', sub: 3 } as PayloadTokenDto;
-      await controller.findFarms(payload);
-      expect(service.findAllByFarmer).toHaveBeenCalledWith(3);
+      const paginationQuery = { page: 1, limit: 10 } as PaginationQueryDto;
+      await controller.findFarms(payload, paginationQuery);
+      expect(service.findAllByFarmerPaginated).toHaveBeenCalledWith(3, paginationQuery);
     });
   });
 
