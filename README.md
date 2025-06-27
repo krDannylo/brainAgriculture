@@ -581,7 +581,7 @@ Com isso, temos uma cadeia de relacionamentos funcionando:
 
 ## ⚡Sobre os Novos Requisitos
 
-## Segurança
+### Segurança
 
 ✅ Implementar autenticação JWT
 
@@ -599,7 +599,7 @@ Com isso, temos uma cadeia de relacionamentos funcionando:
 
 ✅ Adição de roles (admin, farmer)
 
-## DevOps
+### DevOps
 
 ✅ Implementar GitHub Actions
 
@@ -607,7 +607,7 @@ Com isso, temos uma cadeia de relacionamentos funcionando:
 
 ✅ Adicionar health checks
 
-## Testes
+### Testes
 
 ✅ Aumentar cobertura de testes para > 80%
 
@@ -623,7 +623,7 @@ Implementar factories para dados de teste
 
 Adicionar cenários de erro
 
-## Observabilidade
+### Observabilidade
 
 ✅ Adicionar endpoints de health check
 
