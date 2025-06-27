@@ -75,7 +75,12 @@ Se preferir rodar com Docker:
 docker-compose up -d
 ```
 
-A aplicação estará disponível em `http://localhost:80`
+A aplicação estará disponível em `http://localhost:3001`
+
+ou
+
+
+A aplicação estará disponível em `http://localhost:80` caso execute o docker-compose.prod.yml
 
 ## 📝 Scripts disponíveis
 
@@ -640,3 +645,8 @@ Documentar códigos de erro
 Documentar decisões de arquitetura
 
 Processo de deploy
+
+## 🧟 Considerações Finais
+
+Este projeto foi desenvolvido utilizando o software HTTPie para realização de requisições, o arquivo `httpie-space-incognito-space` é a collection que foi criada e exportada para facilitar a utilização das rotas, para utilizar basta baixar o software HTTPie e importar esse arquivo.
+
