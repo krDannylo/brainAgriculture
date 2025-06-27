@@ -555,27 +555,27 @@ Com isso, temos uma cadeia de relacionamentos funcionando:
 
 ## 📊 Funcionalidades Implementadas
 
-✅ **Autenticação JWT** - Sistema completo de login com roles
+☑️ **Autenticação JWT** - Sistema completo de login com roles
 
-✅ **Health Checks** - Monitoramento de saúde da aplicação
+☑️ **Health Checks** - Monitoramento de saúde da aplicação
 
-✅ **Paginação** - Todas as rotas de listagem com paginação
+☑️ **Paginação** - Todas as rotas de listagem com paginação
 
-✅ **Sanitização** - Proteção contra XSS em todos os inputs
+☑️ **Sanitização** - Proteção contra XSS em todos os inputs
 
-✅ **Rate Limiting** - Proteção contra ataques de força bruta
+☑️ **Rate Limiting** - Proteção contra ataques de força bruta
 
-✅ **Validação** - Validação robusta com class-validator
+☑️ **Validação** - Validação robusta com class-validator
 
-✅ **Logging** - Sistema de logs com Winston
+☑️ **Logging** - Sistema de logs com Winston
 
-✅ **Testes** - Testes unitários e e2e completos
+☑️ **Testes** - Testes unitários e e2e completos
 
-✅ **Documentação** - Swagger UI integrado
+☑️ **Documentação** - Swagger UI integrado
 
-✅ **Segurança** - Helmet, CORS, validação de CPF/CNPJ
+☑️ **Segurança** - Helmet, CORS, validação de CPF/CNPJ
 
-✅ **Seed** - Dados de exemplo para desenvolvimento
+☑️ **Seed** - Dados de exemplo para desenvolvimento
 
 ## 🔮 Próximas Melhorias
 
