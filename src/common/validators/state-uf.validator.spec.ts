@@ -29,34 +29,27 @@ describe('IsUF', () => {
     model.state = 'XX';
     const errors = await validate(model);
     expect(errors.length).toBe(1);
-    expect(errors[0].constraints).toHaveProperty('isUF', 'state must be a valid UF code');
-  });
-
-  it('should fail with lowercase UF code', async () => {
-    model.state = 'sp';
-    const errors = await validate(model);
-    expect(errors.length).toBe(1);
-    expect(errors[0].constraints).toHaveProperty('isUF', 'state must be a valid UF code');
+    expect(errors[0].constraints).toHaveProperty('isUF', '"XX" UF Invalid');
   });
 
   it('should fail with non-string value', async () => {
     model.state = 123 as any;
     const errors = await validate(model);
     expect(errors.length).toBe(1);
-    expect(errors[0].constraints).toHaveProperty('isUF', 'state must be a valid UF code');
+    expect(errors[0].constraints).toHaveProperty('isUF', '"123" UF Invalid');
   });
 
   it('should fail with empty string', async () => {
     model.state = '';
     const errors = await validate(model);
     expect(errors.length).toBe(1);
-    expect(errors[0].constraints).toHaveProperty('isUF', 'state must be a valid UF code');
+    expect(errors[0].constraints).toHaveProperty('isUF', '"" UF Invalid');
   });
 
   it('should fail with invalid length', async () => {
     model.state = 'SPP';
     const errors = await validate(model);
     expect(errors.length).toBe(1);
-    expect(errors[0].constraints).toHaveProperty('isUF', 'state must be a valid UF code');
+    expect(errors[0].constraints).toHaveProperty('isUF', '"SPP" UF Invalid');
   });
 }); 

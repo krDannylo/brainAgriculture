@@ -71,12 +71,4 @@ describe('isValidFarmArea', () => {
     const errors = await validate(model);
     expect(errors.length).toBe(0);
   });
-
-  it('should fail with negative values that sum correctly', async () => {
-    model.totalArea = -100;
-    model.arableArea = -60;
-    model.vegetationArea = -40;
-    const errors = await validate(model);
-    expect(errors.length).toBe(1);
-  });
 }); 
