@@ -1,0 +1,36 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile.prod
+    container_name: brainAgriculture_prod
+    ports:
+      - '80:3000'
+    env_file:
+      - .env.docker.prod
+    depends_on:
+      - db
+    command: node dist/src/main.js
+
+  db:
+    image: postgres:15
+    container_name: nest_postgres_prod
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+
+volumes:
+  pgdata_prod:
+
+
+# ⚠️Importante ⚠️
+
+# Caso seja a primeira vez rodando o ambiente de PROD execute o comando abaixo # para adicionar o usuário ADMIN no banco de dados
+
+# docker exec -it brainAgriculture_prod npm run db:rebuild

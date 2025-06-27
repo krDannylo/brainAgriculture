@@ -1,0 +1,23 @@
+FROM node:20
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm ci
+
+COPY tsconfig*.json ./
+COPY prisma ./prisma
+COPY src ./src
+
+RUN npx prisma generate
+RUN npm run build
+
+EXPOSE 3000
+CMD ["node", "dist/src/main.js"]
+
+
+# ⚠️Importante ⚠️
+
+# Caso seja a primeira vez rodando o ambiente de PROD execute o comando abaixo # para adicionar o usuário ADMIN no banco de dados
+
+# docker exec -it brainAgriculture_prod npm run db:rebuild

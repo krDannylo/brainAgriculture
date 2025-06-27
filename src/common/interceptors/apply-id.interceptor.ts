@@ -12,7 +12,7 @@ export class ApplyUserIdInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const payload = request[REQUEST_TOKEN_PAYLOAD_NAME];
-    console.log("payload: ", payload)
+    // console.log("payload: ", payload)
 
     if (payload?.role !== 'admin') {
       request.body.farmerId = payload.sub;
