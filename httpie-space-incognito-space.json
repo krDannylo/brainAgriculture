@@ -26,7 +26,7 @@
         "requests": [
           {
             "name": "createFarmer",
-            "url": "localhost:3000/farmers",
+            "url": "localhost:{{port}}/farmers",
             "method": "POST",
             "headers": [
               {
@@ -61,7 +61,7 @@
           },
           {
             "name": "findFarmerById",
-            "url": "localhost:3000/farmers/1",
+            "url": "localhost:{{port}}/farmers/1",
             "method": "GET",
             "headers": [],
             "queryParams": [],
@@ -90,7 +90,7 @@
           },
           {
             "name": "findAllFarmers",
-            "url": "localhost:3000/farmers",
+            "url": "localhost:{{port}}/farmers",
             "method": "GET",
             "headers": [
               {
@@ -125,7 +125,7 @@
           },
           {
             "name": "updateFarmerById",
-            "url": "localhost:3000/farmers/2",
+            "url": "localhost:{{port}}/farmers/2",
             "method": "PATCH",
             "headers": [
               {
@@ -160,7 +160,7 @@
           },
           {
             "name": "deleteFarmerById",
-            "url": "localhost:3000/farmers/2",
+            "url": "localhost:{{port}}/farmers/2",
             "method": "DELETE",
             "headers": [],
             "queryParams": [],
@@ -201,7 +201,7 @@
         "requests": [
           {
             "name": "createFarm",
-            "url": "localhost:3000/farms",
+            "url": "localhost:{{port}}/farms",
             "method": "POST",
             "headers": [
               {
@@ -236,7 +236,7 @@
           },
           {
             "name": "findFarmById",
-            "url": "http://localhost:3000/farms/2",
+            "url": "http://localhost:{{port}}/farms/2",
             "method": "GET",
             "headers": [
               {
@@ -271,7 +271,7 @@
           },
           {
             "name": "findAllFarms",
-            "url": "localhost:3000/farms?page=1&limit=3",
+            "url": "localhost:{{port}}/farms?page=1&limit=3",
             "method": "GET",
             "headers": [
               {
@@ -306,7 +306,7 @@
           },
           {
             "name": "updateFarmById",
-            "url": "localhost:3000/farms/1",
+            "url": "localhost:{{port}}/farms/1",
             "method": "PATCH",
             "headers": [
               {
@@ -341,7 +341,7 @@
           },
           {
             "name": "deleteFarmById",
-            "url": "localhost:3000/farms/3",
+            "url": "localhost:{{port}}/farms/3",
             "method": "DELETE",
             "headers": [
               {
@@ -388,7 +388,7 @@
         "requests": [
           {
             "name": "createHarvest",
-            "url": "localhost:3000/harvests/",
+            "url": "localhost:{{port}}/harvests/",
             "method": "POST",
             "headers": [
               {
@@ -423,7 +423,7 @@
           },
           {
             "name": "findHarvestById",
-            "url": "localhost:3000/harvests/",
+            "url": "localhost:{{port}}/harvests/",
             "method": "GET",
             "headers": [
               {
@@ -458,7 +458,7 @@
           },
           {
             "name": "findAllHarvest",
-            "url": "localhost:3000/harvests/",
+            "url": "localhost:{{port}}/harvests/",
             "method": "GET",
             "headers": [
               {
@@ -493,7 +493,7 @@
           },
           {
             "name": "updateHarvestSeasonById",
-            "url": "localhost:3000/harvests/3",
+            "url": "localhost:{{port}}/harvests/3",
             "method": "PATCH",
             "headers": [
               {
@@ -528,7 +528,7 @@
           },
           {
             "name": "deleteHarvestById",
-            "url": " localhost:3000/harvests/1",
+            "url": " localhost:{{port}}/harvests/1",
             "method": "DELETE",
             "headers": [
               {
@@ -575,7 +575,7 @@
         "requests": [
           {
             "name": "createCrop",
-            "url": "localhost:3000/crops/",
+            "url": "localhost:{{port}}/crops/",
             "method": "POST",
             "headers": [
               {
@@ -610,7 +610,7 @@
           },
           {
             "name": "findCropById",
-            "url": "localhost:3000/crops/1",
+            "url": "localhost:{{port}}/crops/1",
             "method": "GET",
             "headers": [
               {
@@ -645,7 +645,7 @@
           },
           {
             "name": "findAllCrop",
-            "url": "localhost:3000/crops/",
+            "url": "localhost:{{port}}/crops/",
             "method": "GET",
             "headers": [
               {
@@ -680,7 +680,7 @@
           },
           {
             "name": "updateCropById",
-            "url": "localhost:3000/crops/2",
+            "url": "localhost:{{port}}/crops/2",
             "method": "PATCH",
             "headers": [
               {
@@ -715,7 +715,7 @@
           },
           {
             "name": "deleteCropById",
-            "url": " localhost:3000/crops/2",
+            "url": " localhost:{{port}}/crops/2",
             "method": "DELETE",
             "headers": [
               {
@@ -762,7 +762,7 @@
         "requests": [
           {
             "name": "Dashboard",
-            "url": "localhost:3000/dashboard/",
+            "url": "localhost:{{port}}/dashboard/",
             "method": "GET",
             "headers": [],
             "queryParams": [],
@@ -803,7 +803,7 @@
         "requests": [
           {
             "name": "SignIn",
-            "url": "localhost:3000/signIn",
+            "url": "localhost:{{port}}/signIn",
             "method": "POST",
             "headers": [],
             "queryParams": [],
@@ -832,7 +832,7 @@
           },
           {
             "name": "SignUp",
-            "url": "localhost:3000/signUp",
+            "url": "localhost:{{port}}/signUp",
             "method": "POST",
             "headers": [],
             "queryParams": [],
@@ -861,7 +861,7 @@
           },
           {
             "name": "findLoggedFarmer",
-            "url": "localhost:3000/farmers/me",
+            "url": "localhost:{{port}}/farmers/me",
             "method": "GET",
             "headers": [
               {
@@ -896,7 +896,7 @@
           },
           {
             "name": "updateLoggedFarmer",
-            "url": "localhost:3000/farmers/me",
+            "url": "localhost:{{port}}/farmers/me",
             "method": "PATCH",
             "headers": [
               {
@@ -943,7 +943,7 @@
         "requests": [
           {
             "name": "Health",
-            "url": "localhost:3000/health",
+            "url": "localhost:{{port}}/health",
             "method": "GET",
             "headers": [
               {
@@ -978,7 +978,7 @@
           },
           {
             "name": "Health Ready",
-            "url": "localhost:3000/health/ready",
+            "url": "localhost:{{port}}/health/ready",
             "method": "GET",
             "headers": [
               {
@@ -1024,6 +1024,11 @@
           {
             "name": "token",
             "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNzUxMDYzOTAxLCJleHAiOjE3NTM2NTU5MDEsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCJ9.8mnltw8BlUsQieSn3w7SFvwhUViykal_N5RzEv9MOrw",
+            "isSecret": false
+          },
+          {
+            "name": "port",
+            "value": "3001",
             "isSecret": false
           }
         ]
