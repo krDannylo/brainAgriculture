@@ -465,6 +465,33 @@ npm run test:e2e
 npm run test:cov
 ```
 
+### 🏭 Factories para Testes `(Ainda em desenvolvimento)`
+
+O projeto inclui factories para facilitar a criação de dados de teste: 
+
+
+```typescript
+import { 
+  FarmerFactory, 
+} from './src/mocks/factories';
+
+// Criar dados básicos
+const farmer = FarmerFactory.create();
+```
+
+**Exemplo de Uso Completo:**
+
+```typescript
+describe('Farm Management', () => {
+  it('should create a complete farm scenario', () => {
+    // Criar um produtor
+    const farmer = FarmerFactory.createWithValidCPF();
+    
+    // Teste da criação do produtor
+    expect(farmer.document).toBe('123.456.789-09');
+  });
+});
+```
 ---
 
 ## 🤝 Diagrama de Entidade Relacionamento
@@ -623,7 +650,7 @@ Implementar testes de carga
 
 Melhorar mocks para testes
 
-Implementar factories para dados de teste
+🔁 Implementar factories para dados de teste
 
 Adicionar cenários de erro
 

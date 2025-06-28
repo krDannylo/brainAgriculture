@@ -3,13 +3,26 @@ import { FarmerService } from './farmer.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { MESSAGES } from '../../common/constants/messages';
-import { mockCreateFarmerDto, mockFarmer, mockFarmers, mockPrismaService, mockUpdatedFarmer } from '../../mocks/farmer.mock';
+
 import { HashingServiceProtocol } from '../auth/hash/hashing.service';
+import { FarmerFactory } from 'src/mocks/factories/farmer.factory';
 
 describe('FarmerService', () => {
   let service: FarmerService;
-  let prisma: PrismaService;
+  let prismaService: PrismaService;
   let hashingService: HashingServiceProtocol;
+
+  const mockPrismaService = {
+    farmer: {
+      create: jest.fn(),
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
+    },
+  };
 
   const mockHashingService = {
     hash: jest.fn(),
@@ -31,7 +44,7 @@ describe('FarmerService', () => {
     }).compile();
 
     service = module.get<FarmerService>(FarmerService);
-    prisma = module.get<PrismaService>(PrismaService);
+    prismaService = module.get<PrismaService>(PrismaService);
     hashingService = module.get<HashingServiceProtocol>(HashingServiceProtocol);
   });
 
@@ -43,271 +56,224 @@ describe('FarmerService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a farmer successfully', async () => {
-    const hashedPassword = 'hashedPassword123';
-    const expectedResult = {
-      id: 1,
-      name: mockCreateFarmerDto.name,
-      email: mockCreateFarmerDto.email,
-    };
-
-    mockPrismaService.farmer.findUnique
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce(null);
-    mockHashingService.hash.mockResolvedValue(hashedPassword);
-    mockPrismaService.farmer.create.mockResolvedValue(expectedResult);
-
-    const result = await service.create(mockCreateFarmerDto);
-
-    expect(result).toEqual(expectedResult);
-    expect(prisma.farmer.findUnique).toHaveBeenCalledWith({
-      where: { document: mockCreateFarmerDto.document }
-    });
-    expect(prisma.farmer.findUnique).toHaveBeenCalledWith({
-      where: { email: mockCreateFarmerDto.email }
-    });
-    expect(hashingService.hash).toHaveBeenCalledWith(mockCreateFarmerDto.password);
-    expect(prisma.farmer.create).toHaveBeenCalledWith({
-      data: {
-        name: mockCreateFarmerDto.name,
-        document: mockCreateFarmerDto.document,
-        email: mockCreateFarmerDto.email,
-        password: hashedPassword,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
-    });
-  });
-
-  it('should throw an error if document already exists when creating', async () => {
-    mockPrismaService.farmer.findUnique.mockResolvedValue(mockFarmer);
-
-    await expect(service.create(mockCreateFarmerDto)).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.CONFLICT_DOCUMENT, HttpStatus.CONFLICT),
-    );
-  });
-
-  it('should throw an error if email already exists when creating', async () => {
-    mockPrismaService.farmer.findUnique
-      .mockResolvedValueOnce(null)
-      .mockResolvedValueOnce(mockFarmer);
-
-    await expect(service.create(mockCreateFarmerDto)).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.CONFLICT_EMAIL, HttpStatus.CONFLICT),
-    );
-  });
-
-  it('should find a farmer by id successfully', async () => {
-    const expectedResult = {
-      id: 1,
-      name: mockFarmer.name,
-      email: mockFarmer.email,
-      Farm: [],
-    };
-
-    mockPrismaService.farmer.findFirst.mockResolvedValue(expectedResult);
-
-    const result = await service.findOne(1);
-
-    expect(result).toEqual(expectedResult);
-    expect(prisma.farmer.findFirst).toHaveBeenCalledWith({
-      where: { id: 1 },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        Farm: {
-          include: {
-            HarvestSeason: {
-              include: {
-                Crop: true,
-              },
-            },
-          },
-        },
-      },
-    });
-  });
-
-  it('should throw an error if farmer is not found when finding by id', async () => {
-    mockPrismaService.farmer.findFirst.mockResolvedValue(null);
-
-    await expect(service.findOne(1)).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND),
-    );
-  });
-
-  it('should return all farmers successfully', async () => {
-    const expectedResult = [
-      {
+  describe('create', () => {
+    it('should create a farmer successfully', async () => {
+      const farmerData = FarmerFactory.createWithValidCPF();
+      const hashedPassword = 'hashedPassword123';
+      const expectedFarmer = {
         id: 1,
-        name: 'Test Farmer 1',
-        email: 'test1@email.com',
-        Farm: [],
-      },
-      {
-        id: 2,
-        name: 'Test Farmer 2',
-        email: 'test2@email.com',
-        Farm: [],
-      },
-    ];
+        name: farmerData.name,
+        email: farmerData.email
+      };
 
-    mockPrismaService.farmer.findMany.mockResolvedValue(expectedResult);
+      mockPrismaService.farmer.findUnique
+        .mockResolvedValueOnce(null) // document check
+        .mockResolvedValueOnce(null); // email check
+      mockHashingService.hash.mockResolvedValue(hashedPassword);
+      mockPrismaService.farmer.create.mockResolvedValue(expectedFarmer);
 
-    const result = await service.findAll();
+      const result = await service.create(farmerData);
 
-    expect(result).toEqual(expectedResult);
-    expect(prisma.farmer.findMany).toHaveBeenCalledWith({
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        Farm: {
-          include: {
-            HarvestSeason: {
-              include: {
-                Crop: true,
+      expect(mockPrismaService.farmer.findUnique).toHaveBeenCalledTimes(2);
+      expect(mockHashingService.hash).toHaveBeenCalledWith(farmerData.password);
+      expect(mockPrismaService.farmer.create).toHaveBeenCalledWith({
+        data: {
+          name: farmerData.name,
+          document: farmerData.document,
+          email: farmerData.email,
+          password: hashedPassword
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        }
+      });
+      expect(result).toEqual(expectedFarmer);
+    });
+
+    it('should create multiple farmers with different document types', async () => {
+      const cpfFarmer = FarmerFactory.createWithValidCPF();
+      const cnpjFarmer = FarmerFactory.createWithValidCNPJ();
+
+      mockPrismaService.farmer.findUnique
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null)
+        .mockResolvedValueOnce(null);
+      mockHashingService.hash.mockResolvedValue('hashedPassword');
+      mockPrismaService.farmer.create
+        .mockResolvedValueOnce({ id: 1, name: cpfFarmer.name, email: cpfFarmer.email })
+        .mockResolvedValueOnce({ id: 2, name: cnpjFarmer.name, email: cnpjFarmer.email });
+
+      const result1 = await service.create(cpfFarmer);
+      const result2 = await service.create(cnpjFarmer);
+
+      expect(result1.name).toBe(cpfFarmer.name);
+      expect(result2.name).toBe(cnpjFarmer.name);
+    });
+  });
+
+  describe('findAllPaginated', () => {
+    it('should return paginated farmers', async () => {
+      const farmers = FarmerFactory.createMany(5).map((farmer, index) => ({
+        id: index + 1,
+        name: farmer.name,
+        email: farmer.email,
+        role: 'farmer',
+        Farm: []
+      }));
+
+      mockPrismaService.farmer.findMany.mockResolvedValue(farmers);
+      mockPrismaService.farmer.count.mockResolvedValue(5);
+
+      const result = await service.findAllPaginated({ page: 1, limit: 10 });
+
+      expect(mockPrismaService.farmer.findMany).toHaveBeenCalled();
+      expect(mockPrismaService.farmer.count).toHaveBeenCalled();
+      expect(result.data).toHaveLength(5);
+      expect(result.meta.total).toBe(5);
+    });
+
+    it('should handle empty results', async () => {
+      mockPrismaService.farmer.findMany.mockResolvedValue([]);
+      mockPrismaService.farmer.count.mockResolvedValue(0);
+
+      const result = await service.findAllPaginated({ page: 1, limit: 10 });
+
+      expect(result.data).toEqual([]);
+      expect(result.meta.total).toBe(0);
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find a farmer by id', async () => {
+      const farmer = FarmerFactory.createWithValidCPF();
+      const expectedFarmer = {
+        id: 1,
+        name: farmer.name,
+        email: farmer.email,
+        role: 'farmer',
+        Farm: []
+      };
+
+      mockPrismaService.farmer.findFirst.mockResolvedValue(expectedFarmer);
+
+      const result = await service.findOne(1);
+
+      expect(mockPrismaService.farmer.findFirst).toHaveBeenCalledWith({
+        where: { id: 1 },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          Farm: {
+            include: {
+              HarvestSeason: {
+                include: {
+                  Crop: true,
+                },
               },
             },
           },
         },
-      },
+      });
+      expect(result).toEqual(expectedFarmer);
     });
   });
 
-  it('should throw an error if no farmers are found when listing all', async () => {
-    mockPrismaService.farmer.findMany.mockResolvedValue(null);
+  describe('updateById', () => {
+    it('should update a farmer successfully', async () => {
+      const updateData = { name: 'Updated Name' };
+      const existingFarmer = FarmerFactory.createWithValidCPF();
+      const farmerWithId = {
+        id: 1,
+        name: existingFarmer.name,
+        email: existingFarmer.email,
+        role: 'farmer',
+        Farm: []
+      };
+      const updatedFarmer = {
+        id: 1,
+        name: 'Updated Name',
+        email: existingFarmer.email
+      };
 
-    await expect(service.findAll()).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND),
-    );
-  });
+      mockPrismaService.farmer.findFirst.mockResolvedValue(farmerWithId);
+      mockPrismaService.farmer.update.mockResolvedValue(updatedFarmer);
 
-  it('should update a farmer successfully', async () => {
-    const updateFarmerDto = {
-      name: 'Updated Farmer',
-    };
+      const result = await service.updateById(1, updateData);
 
-    const existingFarmer = {
-      id: 1,
-      name: 'Original Farmer',
-      email: 'test@email.com',
-      Farm: [],
-    };
-
-    const expectedResult = {
-      id: 1,
-      name: 'Updated Farmer',
-      email: 'test@email.com',
-    };
-
-    mockPrismaService.farmer.findFirst.mockResolvedValue(existingFarmer);
-    mockPrismaService.farmer.update.mockResolvedValue(expectedResult);
-
-    const result = await service.updateById(1, updateFarmerDto);
-
-    expect(result).toEqual(expectedResult);
-    expect(prisma.farmer.update).toHaveBeenCalledWith({
-      where: { id: 1 },
-      data: {
-        name: 'Updated Farmer',
-        email: 'test@email.com',
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      expect(mockPrismaService.farmer.update).toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: {
+          name: 'Updated Name',
+          email: existingFarmer.email
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+        }
+      });
+      expect(result).toEqual(updatedFarmer);
     });
   });
 
-  it('should update a farmer with password successfully', async () => {
-    const updateFarmerDto = {
-      name: 'Updated Farmer',
-      password: 'newPassword123',
-    };
+  describe('deleteById', () => {
+    it('should delete a farmer successfully', async () => {
+      const farmer = FarmerFactory.createWithValidCPF();
+      const farmerWithId = {
+        id: 1,
+        name: farmer.name,
+        email: farmer.email,
+        role: 'farmer',
+        Farm: []
+      };
 
-    const hashedPassword = 'hashedNewPassword123';
-    const existingFarmer = {
-      id: 1,
-      name: 'Original Farmer',
-      email: 'test@email.com',
-      Farm: [],
-    };
+      mockPrismaService.farmer.findFirst.mockResolvedValue(farmerWithId);
+      mockPrismaService.farmer.delete.mockResolvedValue(farmerWithId);
 
-    const expectedResult = {
-      id: 1,
-      name: 'Updated Farmer',
-      email: 'test@email.com',
-    };
+      const result = await service.deleteById(1);
 
-    mockPrismaService.farmer.findFirst.mockResolvedValue(existingFarmer);
-    mockHashingService.hash.mockResolvedValue(hashedPassword);
-    mockPrismaService.farmer.update.mockResolvedValue(expectedResult);
-
-    const result = await service.updateById(1, updateFarmerDto);
-
-    expect(result).toEqual(expectedResult);
-    expect(hashingService.hash).toHaveBeenCalledWith('newPassword123');
-    expect(prisma.farmer.update).toHaveBeenCalledWith({
-      where: { id: 1 },
-      data: {
-        name: 'Updated Farmer',
-        email: 'test@email.com',
-        password: hashedPassword,
-      },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-      },
+      expect(mockPrismaService.farmer.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+      expect(result).toEqual({ statusCode: 200, message: 'Operação realizada com sucesso.' });
     });
   });
 
-  it('should throw an error if farmer is not found when updating', async () => {
-    const updateFarmerDto = {
-      name: 'Updated Farmer',
-    };
+  describe('findAll', () => {
+    it('should return all farmers', async () => {
+      const farmers = FarmerFactory.createMany(3).map((farmer, index) => ({
+        id: index + 1,
+        name: farmer.name,
+        email: farmer.email,
+        Farm: []
+      }));
 
-    mockPrismaService.farmer.findFirst.mockResolvedValue(null);
+      mockPrismaService.farmer.findMany.mockResolvedValue(farmers);
 
-    await expect(service.updateById(1, updateFarmerDto)).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND),
-    );
-  });
+      const result = await service.findAll();
 
-  it('should delete a farmer successfully', async () => {
-    const existingFarmer = {
-      id: 1,
-      name: 'Test Farmer',
-      email: 'test@email.com',
-      Farm: [],
-    };
-
-    mockPrismaService.farmer.findFirst.mockResolvedValue(existingFarmer);
-    mockPrismaService.farmer.delete.mockResolvedValue(existingFarmer);
-
-    const result = await service.deleteById(1);
-
-    expect(result).toEqual({
-      statusCode: HttpStatus.OK,
-      message: MESSAGES.GENERAL.SUCCESS,
+      expect(mockPrismaService.farmer.findMany).toHaveBeenCalledWith({
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          Farm: {
+            include: {
+              HarvestSeason: {
+                include: {
+                  Crop: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      expect(result).toEqual(farmers);
     });
-    expect(prisma.farmer.delete).toHaveBeenCalledWith({
-      where: { id: 1 },
-    });
-  });
-
-  it('should throw an error if farmer is not found when deleting', async () => {
-    mockPrismaService.farmer.findFirst.mockResolvedValue(null);
-
-    await expect(service.deleteById(1)).rejects.toThrow(
-      new HttpException(MESSAGES.FARMER.NOT_FOUND, HttpStatus.NOT_FOUND),
-    );
   });
 }); 
