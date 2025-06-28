@@ -11,6 +11,7 @@ services:
     depends_on:
       - db
     command: sh -c "npx prisma migrate reset --force && npm run start:prod"
+    
 
   db:
     image: postgres:15

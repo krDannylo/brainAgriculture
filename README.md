@@ -79,7 +79,6 @@ A aplicação estará disponível em `http://localhost:3001`
 
 ou
 
-
 A aplicação estará disponível em `http://localhost:80` caso execute o docker-compose.prod.yml
 
 ## 📝 Scripts disponíveis
